@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -6,8 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { PredictionChart } from "@/components/PredictionChart";
 import { GeneticAlgorithmViz } from "@/components/GeneticAlgorithmViz";
-import { Sprout, Brain, Dna, TrendingUp } from "lucide-react";
+import { Sprout, Brain, Dna, TrendingUp, MapPin, Cloud } from "lucide-react";
 import { toast } from "sonner";
+import { useWeatherData } from "@/hooks/useWeatherData";
 
 const Dashboard = () => {
   const [predicting, setPredicting] = useState(false);
@@ -17,6 +18,26 @@ const Dashboard = () => {
   const [season, setSeason] = useState("");
   const [temperature, setTemperature] = useState("");
   const [rainfall, setRainfall] = useState("");
+  const [location, setLocation] = useState({ lat: 40.7128, lon: -74.0060 }); // Default: New York
+  const [fetchWeather, setFetchWeather] = useState(false);
+
+  const { weatherData, loading: weatherLoading } = useWeatherData({
+    latitude: location.lat,
+    longitude: location.lon,
+    enabled: fetchWeather,
+  });
+
+  useEffect(() => {
+    if (weatherData) {
+      setTemperature(weatherData.temperature.toString());
+      setRainfall(weatherData.rainfall.toString());
+      toast.success(`Weather data loaded for ${weatherData.location}`);
+    }
+  }, [weatherData]);
+
+  const handleFetchWeather = () => {
+    setFetchWeather(true);
+  };
 
   const handlePredict = () => {
     if (!cropType || !soilType || !season || !temperature || !rainfall) {
@@ -98,6 +119,58 @@ const Dashboard = () => {
               <CardDescription>Enter farming conditions for AI analysis</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="bg-muted/50 p-4 rounded-lg border border-border mb-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Cloud className="h-5 w-5 text-primary" />
+                    <Label>Real-Time Weather Data</Label>
+                  </div>
+                  <Button
+                    onClick={handleFetchWeather}
+                    disabled={weatherLoading}
+                    variant="outline"
+                    size="sm"
+                  >
+                    {weatherLoading ? "Loading..." : "Fetch Weather"}
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="space-y-2">
+                    <Label htmlFor="lat" className="text-xs text-muted-foreground">Latitude</Label>
+                    <Input
+                      id="lat"
+                      type="number"
+                      step="0.0001"
+                      value={location.lat}
+                      onChange={(e) => setLocation({ ...location, lat: parseFloat(e.target.value) })}
+                      className="h-8"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lon" className="text-xs text-muted-foreground">Longitude</Label>
+                    <Input
+                      id="lon"
+                      type="number"
+                      step="0.0001"
+                      value={location.lon}
+                      onChange={(e) => setLocation({ ...location, lon: parseFloat(e.target.value) })}
+                      className="h-8"
+                    />
+                  </div>
+                </div>
+                {weatherData && (
+                  <div className="mt-3 p-2 bg-background rounded border border-border">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                      <MapPin className="h-3 w-3" />
+                      <span>{weatherData.location}</span>
+                    </div>
+                    <div className="text-xs">
+                      Temp: {weatherData.temperature}°C | Humidity: {weatherData.humidity}%
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="crop">Crop Type</Label>
                 <Select value={cropType} onValueChange={setCropType}>
