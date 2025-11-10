@@ -77,6 +77,86 @@ const Dashboard = () => {
     setGeneticTraits(prev => ({ ...prev, [trait]: !prev[trait] }));
   };
 
+  const getRecommendedTraits = () => {
+    const recommendations: { trait: keyof typeof geneticTraits; reason: string }[] = [];
+    
+    // Temperature-based recommendations
+    const temp = parseFloat(temperature);
+    if (!isNaN(temp)) {
+      if (temp > 30) {
+        recommendations.push({ trait: 'droughtTolerance', reason: 'High temperature detected' });
+        recommendations.push({ trait: 'climateAdaptability', reason: 'Extreme heat conditions' });
+      } else if (temp < 10) {
+        recommendations.push({ trait: 'climateAdaptability', reason: 'Cold climate conditions' });
+      }
+    }
+
+    // Rainfall-based recommendations
+    const rain = parseFloat(rainfall);
+    if (!isNaN(rain)) {
+      if (rain < 500) {
+        recommendations.push({ trait: 'droughtTolerance', reason: 'Low rainfall expected' });
+      } else if (rain > 1500) {
+        recommendations.push({ trait: 'diseaseResistance', reason: 'High moisture increases disease risk' });
+      }
+    }
+
+    // Crop-specific recommendations
+    if (cropType === 'wheat' || cropType === 'rice') {
+      recommendations.push({ trait: 'diseaseResistance', reason: `${cropType} is susceptible to diseases` });
+      recommendations.push({ trait: 'highYield', reason: 'Staple crop optimization' });
+    } else if (cropType === 'corn') {
+      recommendations.push({ trait: 'pestResistance', reason: 'Corn attracts various pests' });
+      recommendations.push({ trait: 'highYield', reason: 'High demand crop' });
+    } else if (cropType === 'cotton') {
+      recommendations.push({ trait: 'pestResistance', reason: 'Cotton bollworm risk' });
+      recommendations.push({ trait: 'droughtTolerance', reason: 'Cotton requires water management' });
+    }
+
+    // Soil-based recommendations
+    if (soilType === 'sandy') {
+      recommendations.push({ trait: 'droughtTolerance', reason: 'Sandy soil drains quickly' });
+    } else if (soilType === 'clay') {
+      recommendations.push({ trait: 'diseaseResistance', reason: 'Clay soil retains moisture' });
+    }
+
+    // Season-based recommendations
+    if (season === 'summer') {
+      recommendations.push({ trait: 'fastGrowth', reason: 'Maximize summer growing season' });
+    } else if (season === 'winter') {
+      recommendations.push({ trait: 'climateAdaptability', reason: 'Cold season adaptation' });
+    }
+
+    // Always recommend high yield as a baseline
+    if (!recommendations.some(r => r.trait === 'highYield')) {
+      recommendations.push({ trait: 'highYield', reason: 'Maximize productivity' });
+    }
+
+    // Remove duplicates
+    const uniqueRecommendations = recommendations.reduce((acc, curr) => {
+      if (!acc.find(r => r.trait === curr.trait)) {
+        acc.push(curr);
+      }
+      return acc;
+    }, [] as typeof recommendations);
+
+    return uniqueRecommendations;
+  };
+
+  const applyRecommendations = () => {
+    const recommended = getRecommendedTraits();
+    const newTraits = { ...geneticTraits };
+    recommended.forEach(({ trait }) => {
+      newTraits[trait] = true;
+    });
+    setGeneticTraits(newTraits);
+    toast.success(`Applied ${recommended.length} recommended traits`);
+  };
+
+  const recommendedTraits = cropType && soilType && season && temperature && rainfall 
+    ? getRecommendedTraits() 
+    : [];
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card shadow-soft">
@@ -266,6 +346,45 @@ const Dashboard = () => {
                   <Dna className="h-5 w-5 text-secondary" />
                   <Label>Genetic Trait Selection</Label>
                 </div>
+                
+                {recommendedTraits.length > 0 && (
+                  <div className="mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Brain className="h-4 w-4 text-primary" />
+                          <span className="text-sm font-semibold text-primary">AI Recommendations</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Based on your farming conditions</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={applyRecommendations}
+                        className="text-xs"
+                      >
+                        Apply All
+                      </Button>
+                    </div>
+                    <div className="space-y-1.5">
+                      {recommendedTraits.map(({ trait, reason }) => (
+                        <div 
+                          key={trait}
+                          className="flex items-start gap-2 text-xs bg-background/50 p-2 rounded"
+                        >
+                          <Leaf className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <span className="font-medium capitalize">
+                              {trait.replace(/([A-Z])/g, ' $1').trim()}
+                            </span>
+                            <span className="text-muted-foreground"> - {reason}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex items-center space-x-2">
                     <Checkbox
@@ -275,10 +394,15 @@ const Dashboard = () => {
                     />
                     <label
                       htmlFor="pestResistance"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer"
+                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer ${
+                        recommendedTraits.some(r => r.trait === 'pestResistance') ? 'text-primary' : ''
+                      }`}
                     >
                       <Bug className="h-4 w-4 text-primary" />
                       Pest Resistance
+                      {recommendedTraits.some(r => r.trait === 'pestResistance') && (
+                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">✓</span>
+                      )}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -289,10 +413,15 @@ const Dashboard = () => {
                     />
                     <label
                       htmlFor="highYield"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer"
+                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer ${
+                        recommendedTraits.some(r => r.trait === 'highYield') ? 'text-primary' : ''
+                      }`}
                     >
                       <TrendingUp className="h-4 w-4 text-accent" />
                       High Yield
+                      {recommendedTraits.some(r => r.trait === 'highYield') && (
+                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">✓</span>
+                      )}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -303,10 +432,15 @@ const Dashboard = () => {
                     />
                     <label
                       htmlFor="droughtTolerance"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer"
+                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer ${
+                        recommendedTraits.some(r => r.trait === 'droughtTolerance') ? 'text-primary' : ''
+                      }`}
                     >
                       <Droplets className="h-4 w-4 text-primary" />
                       Drought Tolerance
+                      {recommendedTraits.some(r => r.trait === 'droughtTolerance') && (
+                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">✓</span>
+                      )}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -317,10 +451,15 @@ const Dashboard = () => {
                     />
                     <label
                       htmlFor="diseaseResistance"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer"
+                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer ${
+                        recommendedTraits.some(r => r.trait === 'diseaseResistance') ? 'text-primary' : ''
+                      }`}
                     >
                       <Shield className="h-4 w-4 text-secondary" />
                       Disease Resistance
+                      {recommendedTraits.some(r => r.trait === 'diseaseResistance') && (
+                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">✓</span>
+                      )}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -331,10 +470,15 @@ const Dashboard = () => {
                     />
                     <label
                       htmlFor="fastGrowth"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer"
+                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer ${
+                        recommendedTraits.some(r => r.trait === 'fastGrowth') ? 'text-primary' : ''
+                      }`}
                     >
                       <Zap className="h-4 w-4 text-accent" />
                       Fast Growth
+                      {recommendedTraits.some(r => r.trait === 'fastGrowth') && (
+                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">✓</span>
+                      )}
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -345,10 +489,15 @@ const Dashboard = () => {
                     />
                     <label
                       htmlFor="climateAdaptability"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer"
+                      className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-1.5 cursor-pointer ${
+                        recommendedTraits.some(r => r.trait === 'climateAdaptability') ? 'text-primary' : ''
+                      }`}
                     >
                       <Thermometer className="h-4 w-4 text-primary" />
                       Climate Adaptability
+                      {recommendedTraits.some(r => r.trait === 'climateAdaptability') && (
+                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">✓</span>
+                      )}
                     </label>
                   </div>
                 </div>
