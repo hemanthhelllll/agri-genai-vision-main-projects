@@ -6,10 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { PredictionChart } from "@/components/PredictionChart";
 import { GeneticAlgorithmViz } from "@/components/GeneticAlgorithmViz";
-import { Sprout, Brain, Dna, TrendingUp, MapPin, Cloud, Shield, Leaf, Droplets, Bug, Zap, Thermometer } from "lucide-react";
+import { Sprout, Brain, Dna, TrendingUp, MapPin, Cloud, Shield, Leaf, Droplets, Bug, Zap, Thermometer, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { useWeatherData } from "@/hooks/useWeatherData";
 import { Checkbox } from "@/components/ui/checkbox";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Dashboard = () => {
   const [predicting, setPredicting] = useState(false);
@@ -157,15 +159,194 @@ const Dashboard = () => {
     ? getRecommendedTraits() 
     : [];
 
+  const generatePDFReport = async () => {
+    if (!showResults) {
+      toast.error("Please generate predictions first");
+      return;
+    }
+
+    toast.info("Generating PDF report...");
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 15;
+    let yPosition = margin;
+
+    // Title
+    pdf.setFontSize(22);
+    pdf.setTextColor(34, 197, 94);
+    pdf.text("Smart Crop Forecasting Report", pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
+
+    pdf.setFontSize(10);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 15;
+
+    // Input Parameters Section
+    pdf.setFontSize(14);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text("Input Parameters", margin, yPosition);
+    yPosition += 8;
+
+    pdf.setFontSize(10);
+    pdf.setTextColor(60, 60, 60);
+    const parameters = [
+      `Crop Type: ${cropType.charAt(0).toUpperCase() + cropType.slice(1)}`,
+      `Soil Type: ${soilType.charAt(0).toUpperCase() + soilType.slice(1)}`,
+      `Season: ${season.charAt(0).toUpperCase() + season.slice(1)}`,
+      `Temperature: ${temperature}°C`,
+      `Rainfall: ${rainfall}mm`,
+    ];
+
+    if (weatherData) {
+      parameters.push(`Location: ${weatherData.location}`);
+      parameters.push(`Current Humidity: ${weatherData.humidity}%`);
+    }
+
+    parameters.forEach(param => {
+      pdf.text(param, margin + 5, yPosition);
+      yPosition += 6;
+    });
+
+    yPosition += 5;
+
+    // Selected Genetic Traits Section
+    pdf.setFontSize(14);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text("Selected Genetic Traits", margin, yPosition);
+    yPosition += 8;
+
+    pdf.setFontSize(10);
+    pdf.setTextColor(60, 60, 60);
+    const selectedTraits = Object.entries(geneticTraits)
+      .filter(([_, selected]) => selected)
+      .map(([trait]) => trait.replace(/([A-Z])/g, ' $1').trim());
+
+    if (selectedTraits.length > 0) {
+      selectedTraits.forEach(trait => {
+        pdf.text(`• ${trait.charAt(0).toUpperCase() + trait.slice(1)}`, margin + 5, yPosition);
+        yPosition += 6;
+      });
+    } else {
+      pdf.text("No genetic traits selected", margin + 5, yPosition);
+      yPosition += 6;
+    }
+
+    yPosition += 5;
+
+    // AI Recommendations Section
+    if (recommendedTraits.length > 0) {
+      pdf.setFontSize(14);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text("AI-Recommended Traits", margin, yPosition);
+      yPosition += 8;
+
+      pdf.setFontSize(9);
+      pdf.setTextColor(60, 60, 60);
+      recommendedTraits.forEach(({ trait, reason }) => {
+        const traitName = trait.replace(/([A-Z])/g, ' $1').trim();
+        const text = `• ${traitName.charAt(0).toUpperCase() + traitName.slice(1)}: ${reason}`;
+        const lines = pdf.splitTextToSize(text, pageWidth - margin * 2 - 5);
+        lines.forEach((line: string) => {
+          if (yPosition > pageHeight - 20) {
+            pdf.addPage();
+            yPosition = margin;
+          }
+          pdf.text(line, margin + 5, yPosition);
+          yPosition += 5;
+        });
+      });
+      yPosition += 5;
+    }
+
+    // Prediction Results Section
+    pdf.setFontSize(14);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text("Prediction Results", margin, yPosition);
+    yPosition += 8;
+
+    pdf.setFontSize(10);
+    pdf.setTextColor(60, 60, 60);
+    pdf.text("AI Prediction Accuracy: 94.5%", margin + 5, yPosition);
+    yPosition += 6;
+    pdf.text("Genetic Algorithm Generations: 1,247", margin + 5, yPosition);
+    yPosition += 6;
+    pdf.text("Projected Yield Improvement: +23.4% vs Traditional", margin + 5, yPosition);
+    yPosition += 10;
+
+    // Capture charts
+    try {
+      const chartElements = document.querySelectorAll('[data-chart]');
+      
+      for (let i = 0; i < chartElements.length; i++) {
+        const element = chartElements[i] as HTMLElement;
+        
+        if (yPosition > pageHeight - 80) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', margin, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 10;
+      }
+    } catch (error) {
+      console.error("Error capturing charts:", error);
+    }
+
+    // Footer
+    const pageCount = pdf.internal.pages.length - 1;
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text(
+        `Page ${i} of ${pageCount} | Smart Crop Forecasting System`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+
+    // Save the PDF
+    pdf.save(`Crop_Forecast_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+    toast.success("PDF report downloaded successfully!");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card shadow-soft">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <Sprout className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold text-foreground">Smart Crop Forecasting</h1>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-3">
+                <Sprout className="h-8 w-8 text-primary" />
+                <h1 className="text-3xl font-bold text-foreground">Smart Crop Forecasting</h1>
+              </div>
+              <p className="text-muted-foreground mt-2">AI-Powered Agricultural Intelligence with Genetic Optimization</p>
+            </div>
+            {showResults && (
+              <Button
+                onClick={generatePDFReport}
+                variant="default"
+                size="lg"
+                className="gap-2"
+              >
+                <FileDown className="h-5 w-5" />
+                Download Report
+              </Button>
+            )}
           </div>
-          <p className="text-muted-foreground mt-2">AI-Powered Agricultural Intelligence with Genetic Optimization</p>
         </div>
       </header>
 
@@ -517,8 +698,12 @@ const Dashboard = () => {
           <div className="space-y-6">
             {showResults && (
               <>
-                <PredictionChart />
-                <GeneticAlgorithmViz />
+                <div data-chart>
+                  <PredictionChart />
+                </div>
+                <div data-chart>
+                  <GeneticAlgorithmViz />
+                </div>
               </>
             )}
           </div>
