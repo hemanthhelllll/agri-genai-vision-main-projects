@@ -73,6 +73,33 @@ const Dashboard = () => {
     }
   }, [weatherData]);
 
+  const handleGetCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    toast.info("Detecting your location...");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocation({ lat: latitude, lon: longitude });
+        setFetchWeather(true);
+        toast.success("Location detected successfully!");
+      },
+      (error) => {
+        toast.error("Unable to detect location. Please enter coordinates manually.");
+        console.error("Geolocation error:", error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+  };
+
   const handleFetchWeather = () => {
     setFetchWeather(true);
   };
@@ -456,14 +483,26 @@ const Dashboard = () => {
                     <Cloud className="h-5 w-5 text-primary" />
                     <Label>Real-Time Weather Data</Label>
                   </div>
-                  <Button
-                    onClick={handleFetchWeather}
-                    disabled={weatherLoading}
-                    variant="outline"
-                    size="sm"
-                  >
-                    {weatherLoading ? "Loading..." : "Fetch Weather"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleGetCurrentLocation}
+                      disabled={weatherLoading}
+                      variant="default"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      Auto-Detect
+                    </Button>
+                    <Button
+                      onClick={handleFetchWeather}
+                      disabled={weatherLoading}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {weatherLoading ? "Loading..." : "Fetch Weather"}
+                    </Button>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="space-y-2">
