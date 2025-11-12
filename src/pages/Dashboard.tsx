@@ -99,9 +99,6 @@ const Dashboard = () => {
     }
   }, [weatherData]);
 
-  const handleFetchWeather = () => {
-    setFetchWeather(true);
-  };
 
   const handlePredict = () => {
     if (!cropType || !soilType || !season || !temperature || !rainfall) {
@@ -316,19 +313,10 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-muted/50 p-4 rounded-lg border border-border mb-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Cloud className="h-5 w-5 text-primary" />
-                    <Label>Location & Weather Data</Label>
-                  </div>
-                  <Button
-                    onClick={handleFetchWeather}
-                    disabled={weatherLoading}
-                    variant="default"
-                    size="sm"
-                  >
-                    {weatherLoading ? "Loading..." : "Fetch Weather"}
-                  </Button>
+                <div className="flex items-center gap-2 mb-3">
+                  <Cloud className="h-5 w-5 text-primary" />
+                  <Label>Location & Weather Forecast</Label>
+                  {weatherLoading && <span className="text-xs text-muted-foreground">(Loading...)</span>}
                 </div>
                 
                 <div className="grid grid-cols-2 gap-2 text-sm">
@@ -356,15 +344,87 @@ const Dashboard = () => {
                   </div>
                 </div>
                 {weatherData && (
-                  <div className="mt-3 p-2 bg-background rounded border border-border">
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
-                      <MapPin className="h-3 w-3" />
-                      <span>{weatherData.location}</span>
+                  <>
+                    <div className="mt-3 p-2 bg-background rounded border border-border">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                        <MapPin className="h-3 w-3" />
+                        <span>{weatherData.location}</span>
+                      </div>
+                      <div className="text-xs">
+                        Temp: {weatherData.temperature}°C | Humidity: {weatherData.humidity}%
+                      </div>
                     </div>
-                    <div className="text-xs">
-                      Temp: {weatherData.temperature}°C | Humidity: {weatherData.humidity}%
+
+                    {/* Planting Window Recommendation */}
+                    {weatherData.plantingWindow && (
+                      <div className={`mt-3 p-3 rounded-lg border ${
+                        weatherData.plantingWindow.recommended 
+                          ? 'bg-primary/5 border-primary/30' 
+                          : 'bg-destructive/5 border-destructive/30'
+                      }`}>
+                        <div className="flex items-start gap-2">
+                          <div className={`p-1 rounded ${
+                            weatherData.plantingWindow.recommended 
+                              ? 'bg-primary/10' 
+                              : 'bg-destructive/10'
+                          }`}>
+                            {weatherData.plantingWindow.recommended ? (
+                              <Check className="h-4 w-4 text-primary" />
+                            ) : (
+                              <Cloud className="h-4 w-4 text-destructive" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-semibold mb-1">
+                              {weatherData.plantingWindow.recommended ? 'Good Planting Window' : 'Unfavorable Conditions'}
+                            </p>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                              {weatherData.plantingWindow.reason}
+                            </p>
+                            {weatherData.plantingWindow.bestDays.length > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-1">
+                                <span className="text-xs text-muted-foreground">Best days:</span>
+                                {weatherData.plantingWindow.bestDays.map((day, idx) => (
+                                  <span key={idx} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
+                                    {new Date(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 7-Day Forecast */}
+                    <div className="mt-3">
+                      <p className="text-xs font-semibold text-muted-foreground mb-2">7-Day Forecast</p>
+                      <div className="grid grid-cols-7 gap-1">
+                        {weatherData.forecast.map((day, idx) => (
+                          <div 
+                            key={idx} 
+                            className="p-1.5 rounded bg-background border border-border hover:border-primary/50 transition-colors"
+                          >
+                            <p className="text-xs font-semibold text-center mb-1">
+                              {idx === 0 ? 'Today' : new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
+                            </p>
+                            <div className="space-y-0.5">
+                              <p className="text-xs text-center">
+                                <span className="text-primary font-semibold">{day.maxTemp}°</span>
+                                <span className="text-muted-foreground text-[10px]"> / {day.minTemp}°</span>
+                              </p>
+                              {day.precipitation > 0 && (
+                                <div className="flex items-center justify-center gap-0.5">
+                                  <Droplets className="h-2.5 w-2.5 text-blue-500" />
+                                  <span className="text-[10px] text-blue-500">{day.precipitation}mm</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
 

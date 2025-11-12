@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { PredictionChart } from "@/components/PredictionChart";
 import { GeneticAlgorithmViz } from "@/components/GeneticAlgorithmViz";
-import { Sprout, Brain, Dna, TrendingUp, ArrowLeft, FileDown, MapPin, Lightbulb, Droplets, Sun, Bug, Leaf } from "lucide-react";
+import { Sprout, Brain, Dna, TrendingUp, ArrowLeft, FileDown, MapPin, Lightbulb, Droplets, Sun, Bug, Leaf, Cloud, Check, Thermometer } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -21,6 +21,18 @@ interface PredictionData {
     temperature: number;
     humidity: number;
     rainfall: number;
+    forecast: Array<{
+      date: string;
+      maxTemp: number;
+      minTemp: number;
+      precipitation: number;
+      humidity: number;
+    }>;
+    plantingWindow?: {
+      recommended: boolean;
+      reason: string;
+      bestDays: string[];
+    };
   };
   recommendedTraits: Array<{ trait: string; reason: string }>;
 }
@@ -454,6 +466,96 @@ const Results = () => {
             </CardContent>
           </Card>
         </div>
+
+        {predictionData.weatherData?.forecast && (
+          <Card className="shadow-medium mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Cloud className="h-5 w-5 text-primary" />
+                7-Day Weather Forecast
+              </CardTitle>
+              <CardDescription>Weather predictions for optimal planting decisions</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {predictionData.weatherData.plantingWindow && (
+                <div className={`p-4 rounded-lg border ${
+                  predictionData.weatherData.plantingWindow.recommended 
+                    ? 'bg-primary/5 border-primary/30' 
+                    : 'bg-destructive/5 border-destructive/30'
+                }`}>
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-lg ${
+                      predictionData.weatherData.plantingWindow.recommended 
+                        ? 'bg-primary/10' 
+                        : 'bg-destructive/10'
+                    }`}>
+                      {predictionData.weatherData.plantingWindow.recommended ? (
+                        <Check className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Cloud className="h-5 w-5 text-destructive" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold mb-2">
+                        {predictionData.weatherData.plantingWindow.recommended ? 'Favorable Planting Window' : 'Unfavorable Conditions'}
+                      </p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {predictionData.weatherData.plantingWindow.reason}
+                      </p>
+                      {predictionData.weatherData.plantingWindow.bestDays.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <span className="text-sm text-muted-foreground">Best planting days:</span>
+                          {predictionData.weatherData.plantingWindow.bestDays.map((day, idx) => (
+                            <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-lg font-medium">
+                              {new Date(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-7 gap-2">
+                {predictionData.weatherData.forecast.map((day, idx) => (
+                  <div 
+                    key={idx} 
+                    className="p-3 rounded-lg bg-muted/30 border border-border hover:border-primary/50 transition-all hover:shadow-soft"
+                  >
+                    <p className="text-sm font-semibold text-center mb-2">
+                      {idx === 0 ? 'Today' : new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
+                    </p>
+                    <p className="text-xs text-center text-muted-foreground mb-2">
+                      {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </p>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center gap-1">
+                        <Sun className="h-3 w-3 text-orange-500" />
+                        <p className="text-sm font-bold text-primary">{day.maxTemp}°</p>
+                      </div>
+                      <div className="flex items-center justify-center gap-1">
+                        <Thermometer className="h-3 w-3 text-blue-500" />
+                        <p className="text-xs text-muted-foreground">{day.minTemp}°</p>
+                      </div>
+                      {day.precipitation > 0 ? (
+                        <div className="flex items-center justify-center gap-1 pt-1 border-t border-border/50">
+                          <Droplets className="h-3 w-3 text-blue-500" />
+                          <span className="text-xs text-blue-500 font-medium">{day.precipitation}mm</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-1 pt-1 border-t border-border/50">
+                          <Sun className="h-3 w-3 text-yellow-500" />
+                          <span className="text-xs text-muted-foreground">Dry</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="shadow-medium mb-8">
           <CardHeader>
