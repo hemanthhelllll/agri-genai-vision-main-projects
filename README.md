@@ -26,7 +26,7 @@ The only requirement is having Node.js & npm installed - [install with nvm](http
 
 **📁 Folder Structure**
 
-**agri-genai-vision-main-project/**
+agri-genai-vision-main-project/
 │
 ├── src/
 │   ├── components/        # UI components
