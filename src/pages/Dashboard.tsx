@@ -21,6 +21,30 @@ import barleyImg from "@/assets/crops/barley.jpg";
 import coffeeImg from "@/assets/crops/coffee.jpg";
 import teaImg from "@/assets/crops/tea.jpg";
 import mustardImg from "@/assets/crops/mustard.jpg";
+import maizeImg from "@/assets/crops/maize.jpg";
+import groundnutImg from "@/assets/crops/groundnut.jpg";
+import chickpeaImg from "@/assets/crops/chickpea.jpg";
+import lentilImg from "@/assets/crops/lentil.jpg";
+import peasImg from "@/assets/crops/peas.jpg";
+import onionImg from "@/assets/crops/onion.jpg";
+import garlicImg from "@/assets/crops/garlic.jpg";
+import cabbageImg from "@/assets/crops/cabbage.jpg";
+import cauliflowerImg from "@/assets/crops/cauliflower.jpg";
+import carrotImg from "@/assets/crops/carrot.jpg";
+import radishImg from "@/assets/crops/radish.jpg";
+import spinachImg from "@/assets/crops/spinach.jpg";
+import lettuceImg from "@/assets/crops/lettuce.jpg";
+import cucumberImg from "@/assets/crops/cucumber.jpg";
+import pumpkinImg from "@/assets/crops/pumpkin.jpg";
+import watermelonImg from "@/assets/crops/watermelon.jpg";
+import mangoImg from "@/assets/crops/mango.jpg";
+import bananaImg from "@/assets/crops/banana.jpg";
+import appleImg from "@/assets/crops/apple.jpg";
+import orangeImg from "@/assets/crops/orange.jpg";
+import grapesImg from "@/assets/crops/grapes.jpg";
+import papayaImg from "@/assets/crops/papaya.jpg";
+import guavaImg from "@/assets/crops/guava.jpg";
+
 
 const crops = [
   { id: "wheat", name: "Wheat", image: wheatImg },
@@ -32,32 +56,32 @@ const crops = [
   { id: "soybean", name: "Soybean", image: soybeanImg },
   { id: "sugarcane", name: "Sugarcane", image: sugarcaneImg },
   { id: "barley", name: "Barley", image: barleyImg },
-  { id: "coffee", name: "Coffee", image: coffeeImg },
+  { id: "coffee", name: "Coffee", image: coffeeImg }, 
   { id: "tea", name: "Tea", image: teaImg },
   { id: "mustard", name: "Mustard", image: mustardImg },
-  { id: "maize", name: "Maize", image: cornImg },
-  { id: "groundnut", name: "Groundnut", image: soybeanImg },
-  { id: "chickpea", name: "Chickpea", image: soybeanImg },
-  { id: "lentil", name: "Lentil", image: soybeanImg },
-  { id: "peas", name: "Peas", image: soybeanImg },
-  { id: "onion", name: "Onion", image: potatoImg },
-  { id: "garlic", name: "Garlic", image: potatoImg },
-  { id: "cabbage", name: "Cabbage", image: tomatoImg },
-  { id: "cauliflower", name: "Cauliflower", image: tomatoImg },
-  { id: "carrot", name: "Carrot", image: potatoImg },
-  { id: "radish", name: "Radish", image: potatoImg },
-  { id: "spinach", name: "Spinach", image: tomatoImg },
-  { id: "lettuce", name: "Lettuce", image: tomatoImg },
-  { id: "cucumber", name: "Cucumber", image: tomatoImg },
-  { id: "pumpkin", name: "Pumpkin", image: tomatoImg },
-  { id: "watermelon", name: "Watermelon", image: tomatoImg },
-  { id: "mango", name: "Mango", image: coffeeImg },
-  { id: "banana", name: "Banana", image: sugarcaneImg },
-  { id: "apple", name: "Apple", image: coffeeImg },
-  { id: "orange", name: "Orange", image: coffeeImg },
-  { id: "grapes", name: "Grapes", image: coffeeImg },
-  { id: "papaya", name: "Papaya", image: coffeeImg },
-  { id: "guava", name: "Guava", image: coffeeImg },
+  { id: "maize", name: "Maize", image: maizeImg },
+  { id: "groundnut", name: "Groundnut", image: groundnutImg },
+  { id: "chickpea", name: "Chickpea", image: chickpeaImg },
+  { id: "lentil", name: "Lentil", image: lentilImg },
+  { id: "peas", name: "Peas", image: peasImg },
+  { id: "onion", name: "Onion", image: onionImg },
+  { id: "garlic", name: "Garlic", image: garlicImg },
+  { id: "cabbage", name: "Cabbage", image: cabbageImg },
+  { id: "cauliflower", name: "Cauliflower", image: cauliflowerImg },
+  { id: "carrot", name: "Carrot", image: carrotImg },
+  { id: "radish", name: "Radish", image: radishImg },
+  { id: "spinach", name: "Spinach", image: spinachImg },
+  { id: "lettuce", name: "Lettuce", image: lettuceImg },
+  { id: "cucumber", name: "Cucumber", image: cucumberImg },
+  { id: "pumpkin", name: "Pumpkin", image: pumpkinImg },
+  { id: "watermelon", name: "Watermelon", image: watermelonImg },
+  { id: "mango", name: "Mango", image: mangoImg },
+  { id: "banana", name: "Banana", image: bananaImg },
+  { id: "apple", name: "Apple", image: appleImg },
+  { id: "orange", name: "Orange", image: orangeImg },
+  { id: "grapes", name: "Grapes", image: grapesImg },
+  { id: "papaya", name: "Papaya", image: papayaImg },
+  { id: "guava", name: "Guava", image: guavaImg },
 ];
 
 // AI-based crop recommendation logic
