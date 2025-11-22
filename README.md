@@ -3,7 +3,7 @@
 ![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ffe06419f49e7a3089527486ca2c83602a4bc718/IMG-20251122-WA0012.jpg)
 ![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/91dc20d16ff71eb6d79e999ca884d4656f947c42/IMG-20251122-WA0011.jpg)
 ![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ab149d092ee89e527a4ce67676534a8ef41b0954/IMG-20251122-WA0008.jpg)
-
+![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ecdc25fbb439bbf4291ed0db7ffa62039bb09ec1/IMG-20251122-WA0009.jpg)
 ## Project info
 
 # Welcome to our project
