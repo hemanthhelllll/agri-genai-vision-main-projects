@@ -102,7 +102,6 @@ This project is built with:
 	•	🌍 GPS-based automatic location detection
 	•	🪴 Fertilizer and irrigation suggestions
 	•	📱 Progressive Web App (PWA) support
-	•	🤖 Chatbot for agricultural queries
 
   **License**
 This project is licensed under the MIT License — feel free to use and modify it.
