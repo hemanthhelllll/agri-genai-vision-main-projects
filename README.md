@@ -1,11 +1,3 @@
-# Welcome to your Lovable project
-![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/3ae5fea6fe448d12f01b42c2dc1cf7f97c82276c/IMG-20251122-WA0013.jpg)
-![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ffe06419f49e7a3089527486ca2c83602a4bc718/IMG-20251122-WA0012.jpg)
-![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/91dc20d16ff71eb6d79e999ca884d4656f947c42/IMG-20251122-WA0011.jpg)
-![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ab149d092ee89e527a4ce67676534a8ef41b0954/IMG-20251122-WA0008.jpg)
-![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ecdc25fbb439bbf4291ed0db7ffa62039bb09ec1/IMG-20251122-WA0009.jpg)
-## Project info
-
 # Welcome to our project
 🌾 Agri-GenAI Vision — Smart Agriculture Image Analysis
 
@@ -13,6 +5,14 @@
 
 Agri-GenAI Vision is an AI-powered web application that helps farmers and agricultural planners choose the best crop to grow under given environmental conditions.
 By analyzing factors such as soil type, temperature, rainfall, humidity, and season, the system uses machine learning and generative AI to predict the most suitable crop and provide helpful insights.
+
+## Project info
+
+![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/3ae5fea6fe448d12f01b42c2dc1cf7f97c82276c/IMG-20251122-WA0013.jpg)
+![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ffe06419f49e7a3089527486ca2c83602a4bc718/IMG-20251122-WA0012.jpg)
+![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/91dc20d16ff71eb6d79e999ca884d4656f947c42/IMG-20251122-WA0011.jpg)
+![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ab149d092ee89e527a4ce67676534a8ef41b0954/IMG-20251122-WA0008.jpg)
+![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/ecdc25fbb439bbf4291ed0db7ffa62039bb09ec1/IMG-20251122-WA0009.jpg)
 
 **Objective**
 
