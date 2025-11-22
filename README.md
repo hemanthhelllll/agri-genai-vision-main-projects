@@ -1,4 +1,5 @@
 # Welcome to your Lovable project
+![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/3ae5fea6fe448d12f01b42c2dc1cf7f97c82276c/IMG-20251122-WA0013.jpg)
 
 ## Project info
 
@@ -21,7 +22,7 @@ To enable data-driven farming decisions by recommending the most profitable and 
 	•	💬 Generative Insights – Provides smart suggestions and explanations for predictions.
 	•	⚡ Modern Web Interface – Fast, responsive UI built with React, TypeScript, Tailwind, and shadcn-ui.
 	•	☁ Easy Deployment – Works seamlessly on web or mobile browsers.
-	![image alt](https://github.com/hemanthhelllll/agri-genai-vision-main-projects/blob/3ae5fea6fe448d12f01b42c2dc1cf7f97c82276c/IMG-20251122-WA0013.jpg)
+
 
 **Use your preferred IDE**
 
